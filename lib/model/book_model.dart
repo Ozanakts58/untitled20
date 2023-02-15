@@ -1,4 +1,3 @@
-
 class BookModel{
   String? name;
   String? author;

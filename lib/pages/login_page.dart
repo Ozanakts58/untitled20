@@ -1,8 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled18/pages/forget_password.dart';
 import 'package:untitled18/pages/home_page.dart';
+import 'package:untitled18/pages/signup_page.dart';
+import 'package:untitled18/services/global_methods.dart';
 import 'package:untitled18/widgets/text_widget.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,12 +17,37 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  final _loginFromKey = GlobalKey<FormState>();
+  bool _isLoading = false;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   //TextEditingController usernameController = TextEditingController();
   //TextEditingController passwordController = TextEditingController();
 
   Future signIn() async {
+    final isValid = _loginFromKey.currentState!.validate();
+    if (isValid) {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await _auth.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+
+        );
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const Homepage()),
+        );
+        //Navigator.canPop(context) ? Navigator.pop(context) : null;
+      } catch (error) {
+        setState(() {
+          _isLoading = false;
+        });
+        GlobalMethod.showErrorDialog(error: error.toString(), ctx: context);
+        print('error$error');
+      }
+    }
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
@@ -132,14 +161,14 @@ class _LoginPageState extends State<LoginPage> {
               _inputField("Mail adresiniz", _emailController),
               const SizedBox(height: 12),
               _inputField("Parolanız", _passwordController, isPassword: true),
+              const SizedBox(height: 15),
+              _extraText(),
               const SizedBox(height: 30),
               _loginBtn(),
               const SizedBox(height: 15),
               _extraText5(),
               const SizedBox(height: 15),
               _googleSignInWidget(),
-              const SizedBox(height: 15),
-              _extraText(),
               const SizedBox(height: 50),
               _extraText2(),
             ],
@@ -155,6 +184,21 @@ class _LoginPageState extends State<LoginPage> {
           border: Border.all(color: Colors.white, width: 0.7),
           shape: BoxShape.rectangle),
       child: const Icon(Icons.menu_book_sharp, color: Colors.white, size: 120),
+    );
+  }
+
+  Widget _colorBackgraund() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue,
+            Colors.red,
+          ],
+        ),
+      ),
     );
   }
 
@@ -178,6 +222,32 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _loginBtn() {
+    return MaterialButton(
+      onPressed: signIn,
+      color: Colors.cyan,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text(
+              'Login',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  /*Widget _loginBtn() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: GestureDetector(
@@ -200,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
+  }*/
 
   /* Widget _loginBtn() {
     return ElevatedButton(
@@ -229,20 +299,62 @@ class _LoginPageState extends State<LoginPage> {
   }*/
 
   Widget _extraText() {
-    return const Text(
-      "Şifremi Unuttum?",
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.white),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        GestureDetector(
+          onTap: () {
+            //Forget Password
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (_) => ForgetPassword()));
+          },
+          child: const Text(
+            "Forget Password?",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w400,
+              fontSize: 17,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _extraText2() {
+    return RichText(
+      text: TextSpan(children: [
+        const TextSpan(
+          text: 'Üye değil misiniz??',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        const TextSpan(text: '      '),
+        TextSpan(
+          recognizer: TapGestureRecognizer()
+            ..onTap = () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SignUpScreen())),
+          text: 'Kayıt Ol',
+          style: const TextStyle(
+            color: Colors.blueAccent,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        )
+      ]),
+    );
+  }
+
+  /*Widget _extraText2() {
     return const Text(
       "Hesabınız yok mu? Üye olun",
       textAlign: TextAlign.end,
       style: TextStyle(fontSize: 16, color: Colors.white),
     );
-  }
+  }*/
 
   Widget _extraText3() {
     return const Text(

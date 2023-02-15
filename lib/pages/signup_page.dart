@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+//import 'package:firebase_storage/firebase_storage.dart';
+import 'package:untitled18/pages/login_page.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -24,6 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       email: mailController.text.trim().toLowerCase(),
       password: passwordController.text.trim(),
     );
+
     final User? user = _auth.currentUser;
     final _uid = user!.uid;
     FirebaseFirestore.instance.collection('kullanicilar').doc(_uid).set({
@@ -84,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 25),
               _loginBtn(),
               const SizedBox(height: 15),
-              _extraText(),
+              _extraText2(),
             ],
           ),
         ),
@@ -147,11 +150,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _extraText() {
-    return const Text(
-      "Zaten üye misisniz? Buradan giriş yapın",
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.white),
+  Widget _extraText2() {
+    return RichText(
+      text: TextSpan(children: [
+        const TextSpan(
+          text: 'Üye değil misiniz??',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        const TextSpan(text: '      '),
+        TextSpan(
+          recognizer: TapGestureRecognizer()
+            ..onTap = () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => LoginPage())),
+          text: 'Giriş Yap',
+          style: const TextStyle(
+            color: Colors.blueAccent,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        )
+      ]),
     );
   }
 

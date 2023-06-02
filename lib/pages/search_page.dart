@@ -224,7 +224,6 @@ class _SearchPageState extends State<SearchPage> {
                                 fontSize: 15,
                               ),
                             ),
-
                           ),
                           ElevatedButton(onPressed: () async {
                                final Uri url = Uri(

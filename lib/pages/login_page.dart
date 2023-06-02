@@ -27,31 +27,45 @@ class _LoginPageState extends State<LoginPage> {
   Future signIn() async {
     final isValid = _loginFromKey.currentState!.validate();
     if (isValid) {
+      if (_emailController.text == null || _passwordController.text == null) {
+        GlobalMethod.showErrorDialog(
+          error: 'Lütfen tüm alanları doldurun',
+          ctx: context,
+        );
+        return;
+      }
       setState(() {
         _isLoading = true;
       });
       try {
         await _auth.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
+          email: _emailController.text.trim().toLowerCase(),
           password: _passwordController.text.trim(),
 
         );
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Homepage()),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
         //Navigator.canPop(context) ? Navigator.pop(context) : null;
+      } on FirebaseException catch (error) {
+        errorDialog(subtitle: '${error.message}', context: context);
       } catch (error) {
+        errorDialog(subtitle: '$error', context: context);
+      } finally {}
+
+
+      /*catch (error) {
         setState(() {
           _isLoading = false;
         });
         GlobalMethod.showErrorDialog(error: error.toString(), ctx: context);
         print('error$error');
-      }
+      }*/
     }
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+    /*await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
-    );
+    );*/
   }
 
   static Future<void> errorDialog({
@@ -105,8 +119,9 @@ class _LoginPageState extends State<LoginPage> {
           await _auth.signInWithCredential(GoogleAuthProvider.credential(
               idToken: googleAuth.idToken,
               accessToken: googleAuth.accessToken));
+
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const Homepage()),
+            MaterialPageRoute(builder: (context) => const HomePage()),
           );
         } on FirebaseException catch (error) {
           errorDialog(subtitle: '${error.message}', context: context);
@@ -151,6 +166,7 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            key: _loginFromKey,
             children: [
               _extraText3(),
               const SizedBox(height: 10),
@@ -235,7 +251,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
             Text(
-              'Login',
+              'Giriş Yap',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -309,10 +325,10 @@ class _LoginPageState extends State<LoginPage> {
                 context, MaterialPageRoute(builder: (_) => ForgetPassword()));
           },
           child: const Text(
-            "Forget Password?",
+            "Şifremi Unuttum?",
             style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w400,
+              color: Colors.blueAccent,
+              fontWeight: FontWeight.bold,
               fontSize: 17,
             ),
           ),
@@ -325,7 +341,7 @@ class _LoginPageState extends State<LoginPage> {
     return RichText(
       text: TextSpan(children: [
         const TextSpan(
-          text: 'Üye değil misiniz??',
+          text: 'Üye değil misiniz?',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

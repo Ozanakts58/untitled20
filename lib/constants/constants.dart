@@ -19,7 +19,7 @@ const BOOK_DATA = [
   },
   {
     "name":"Kumarbaz",
-    "author":"Fyodor Mihayloviç Dostoyevski",
+    "author":"Dostoyevski",
     "price":5,
     "image":"kumarbaz.png",
   },
@@ -38,7 +38,7 @@ const BOOK_DATA = [
   {
     "name":"Binboğalar Efsanesi",
     "author":"Yaşar Kemal",
-    "price":15,
+    "price":17,
     "image":"efsanesi.png",
   },
   {
@@ -56,9 +56,38 @@ const BOOK_DATA = [
   {
     "name":"Saatleri Ayarlama Enstitüsü",
     "author":"Ahmet Hamdi Tanpınar",
-    "price":4,
+    "price":28,
     "image":"enstütü.png",
   },
-
+  {
+    "name":"Yeni Dünya",
+    "author":"Sebahattin Ali",
+    "price":14,
+    "image":"madonna.png",
+  },
+  {
+    "name":"Kuyucaklı Yusuf",
+    "author":"Sebahattin Ali",
+    "price":21,
+    "image":"kuyucaklı.png",
+  },
+  {
+    "name":"İçimizdeki Şeytan",
+    "author":"Sebahattin Ali",
+    "price":18,
+    "image":"icimizdeki.png",
+  },
+  {
+    "name":"Küçük Burjuvalar",
+    "author":"Maksim Gorki",
+    "price":17,
+    "image":"burjuva.png",
+  },
+  {
+    "name":"Silo",
+    "author":"Hugh Howey",
+    "price":12,
+    "image":"silo.png",
+  },
 
 ];

@@ -134,18 +134,18 @@ class _BookAddPageState extends State<BookAddPage> {
     XFile? pickedFile =
     await ImagePicker().pickImage(source: ImageSource.camera);
     _cropImage(pickedFile!.path);
-    Navigator.pop(context);
+   // Navigator.pop(context);
   }
 
   void _getFromGallery() async {
     XFile? pickedFile =
     await ImagePicker().pickImage(source: ImageSource.gallery);
     _cropImage(pickedFile!.path);
-    Navigator.pop(context);
+    //Navigator.pop(context);
   }
 
   void _cropImage(filePath) async {
-    CroppedFile? croppedImage = await ImageCropper().cropImage(
+     CroppedFile? croppedImage = await ImageCropper().cropImage(
       sourcePath: filePath,
       maxHeight: 1080,
       maxWidth: 1080,
@@ -311,7 +311,7 @@ class _BookAddPageState extends State<BookAddPage> {
         _isLoading = true;
       });
       try {
-        await FirebaseFirestore.instance.collection('books').doc(bookId).set({
+        await FirebaseFirestore.instance.collection('bookss').doc(bookId).set({
           'bookId': bookId,
           'uploadedBy': _uid,
           'email.': user.email,
@@ -339,9 +339,6 @@ class _BookAddPageState extends State<BookAddPage> {
         );
         _bookTitleController.clear();
         _bookDescriptionController.clear();
-        _bookAuthorController.clear();
-        _bookPageNumberController.clear();
-        _isbnNumberController.clear();
 
         setState(() {
           _bookCategoryController.text = 'Kitap Kategorisini Seç';
@@ -364,7 +361,7 @@ class _BookAddPageState extends State<BookAddPage> {
 
   void getMyData() async {
     final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('kullanicilar')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
 

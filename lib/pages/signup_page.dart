@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:firebase_storage/firebase_storage.dart';
 import 'package:untitled18/pages/login_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   TextEditingController userNameController = TextEditingController();
   TextEditingController userSurnameController = TextEditingController();
@@ -22,13 +24,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController telephoneController = TextEditingController();
 
   Future<void> KayitOl() async {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: mailController.text.trim().toLowerCase(),
-      password: passwordController.text.trim(),
-    );
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: mailController.text.trim().toLowerCase(),
+        password: passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      print(e);
+    }
 
     final User? user = _auth.currentUser;
-    final _uid = user!.uid;
+    final _uid = user?.uid;
     FirebaseFirestore.instance.collection('kullanicilar').doc(_uid).set({
       'id': _uid,
       'name': userNameController.text,
@@ -37,11 +43,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'phoneNumber': telephoneController,
       'create': Timestamp.now(),
     });
-    Navigator.canPop(context) ? Navigator.pop(context) : null;
+    await Fluttertoast.showToast(
+      msg: "kullanıcı oluşturuldu",
+      toastLength: Toast.LENGTH_LONG,
+      backgroundColor: Colors.grey,
+      fontSize: 18.0,
+    );
+    //Navigator.canPop(context) ? Navigator.pop(context) : null;
   }
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference userRef = _firestore.collection('Userss');
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -70,7 +83,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               const SizedBox(height: 8),
               _extraText3(),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               _extraText4(),
               const SizedBox(height: 10),
               _icon(),
@@ -85,7 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(height: 13),
               _inputField("Telefon numaranız", telephoneController),
               const SizedBox(height: 25),
-              _loginBtn(),
+              _signupBtn(),
               const SizedBox(height: 15),
               _extraText2(),
             ],
@@ -123,16 +136,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _loginBtn() {
+  Widget _signupBtn() {
     return ElevatedButton(
-
-      onPressed: () {
+      onPressed: () async {
         KayitOl();
+        /*CollectionReference userRef = _firestore.collection('Userss');
+        final User? user = _auth.currentUser;
+        final _uid = user!.uid;
+        Map<String, dynamic> userData= {
+        'id': _uid,
+          'name':userNameController.text,
+          'surname':userSurnameController.text,
+          'email':mailController.text,
+          'phone':telephoneController.text.toString(),
+          'create': Timestamp.now(),
+        };
+        //Kitap ismi yeniyse yeni document oluşturur daha onceden varsa değerini değiştirir.
+        await userRef.doc(userNameController.text).set(userData);
         debugPrint("Adınız : ${userNameController.text}");
         debugPrint("Soyadınız : ${userSurnameController.text}");
         debugPrint("Mail Adresiniz : ${mailController.text}");
         debugPrint("Parolanız : ${passwordController.text}");
-        debugPrint("Telefon Numaranız : ${telephoneController.text}");
+        debugPrint("Telefon Numaranız : ${telephoneController.text}");*/
       },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.blue,
@@ -154,7 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return RichText(
       text: TextSpan(children: [
         const TextSpan(
-          text: 'Üye değil misiniz??',
+          text: 'Üyeliğiniz var mı?',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -164,8 +189,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const TextSpan(text: '      '),
         TextSpan(
           recognizer: TapGestureRecognizer()
-            ..onTap = () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => LoginPage())),
+            ..onTap = () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => LoginPage())),
           text: 'Giriş Yap',
           style: const TextStyle(
             color: Colors.blueAccent,
@@ -185,6 +210,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
+
   Widget _extraText4() {
     return const Text(
       "Kayıt Ol",
@@ -193,5 +219,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
           fontSize: 28, color: Colors.white70, fontWeight: FontWeight.w700),
     );
   }
-
 }

@@ -99,7 +99,7 @@ class BottomNavigationBarForApp extends StatelessWidget {
       onTap: (index) {
         if (index == 0) {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) => Homepage()));
+              context, MaterialPageRoute(builder: (_) => HomePage()));
         } else if (index == 1) {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (_) => SearchPage()));

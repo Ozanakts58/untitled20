@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:untitled18/pages/login_page.dart';
@@ -13,12 +14,10 @@ class ForgetPassword extends StatefulWidget {
 ///TickerProviderStateMixin ===> Use  for animation
 class _ForgetPasswordState extends State<ForgetPassword>
     with TickerProviderStateMixin {
-
-
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final TextEditingController _forgetPassTextController = TextEditingController(text: '');
+  final TextEditingController _forgetPassTextController =
+      TextEditingController(text: '');
 
   ///unitState açılışta bir kere çalışır. Dispose sayfa kapandığında akışı keser optimizasyon için önemli.
   @override
@@ -27,14 +26,13 @@ class _ForgetPasswordState extends State<ForgetPassword>
     super.dispose();
   }
 
-
-  void _forgetPassSubmitForm () async {
-    try{
+  void _forgetPassSubmitForm() async {
+    try {
       await _auth.sendPasswordResetEmail(
         email: _forgetPassTextController.text,
       );
       Navigator.push(context, MaterialPageRoute(builder: (_) => LoginPage()));
-    }catch (error) {
+    } catch (error) {
       Fluttertoast.showToast(msg: error.toString());
     }
   }
@@ -47,20 +45,17 @@ class _ForgetPasswordState extends State<ForgetPassword>
       child: Scaffold(
         body: Stack(
           children: [
-              ///image veneer(kaplamak) the full size of screen
+            ///image veneer(kaplamak) the full size of screen
             _colorBackgraund(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-
               child: ListView(
-
                 children: [
                   SizedBox(
                     height: size.height * 0.1,
                   ),
                   const Text(
                     'Şifre Sıfırlama',
-
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -68,7 +63,9 @@ class _ForgetPasswordState extends State<ForgetPassword>
                       fontSize: 55,
                     ),
                   ),
-                  const SizedBox(height: 10,),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   const Text(
                     'Email Adresi',
                     style: TextStyle(
@@ -85,16 +82,17 @@ class _ForgetPasswordState extends State<ForgetPassword>
                       filled: true,
                       fillColor: Colors.white54,
                       enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)
-                      ),
+                          borderSide: BorderSide(color: Colors.white)),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 60,),
+                  const SizedBox(
+                    height: 60,
+                  ),
                   MaterialButton(
-                    onPressed: (){
+                    onPressed: () {
                       ///create ForgetPassSubmitForm
                       _forgetPassSubmitForm();
                     },
@@ -103,11 +101,10 @@ class _ForgetPasswordState extends State<ForgetPassword>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(13),
                     ),
-
                     child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 14),
                       child: Text(
-                        'Sıfırla',
+                        'Şifre Sıfırla',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -117,6 +114,33 @@ class _ForgetPasswordState extends State<ForgetPassword>
                       ),
                     ),
                   ),
+                  SizedBox(height: 25.0),
+                  RichText(
+                    text: TextSpan(children: [
+                      const TextSpan(
+                        text: '            ',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const TextSpan(text: '      '),
+                      TextSpan(
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage())),
+                        text: 'Giriş Yap Sayfasına Geri Dön',
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      )
+                    ]),
+                  ),
                 ],
               ),
             ),
@@ -125,6 +149,7 @@ class _ForgetPasswordState extends State<ForgetPassword>
       ),
     );
   }
+
   Widget _colorBackgraund() {
     return Container(
       decoration: const BoxDecoration(

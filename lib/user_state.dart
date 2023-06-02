@@ -16,7 +16,7 @@ class UserState extends StatelessWidget {
           return LoginPage();
         }else if(userSnapshot.hasData){
           print('User is already logged yet');
-          return Homepage();
+          return HomePage();
         }else if(userSnapshot.hasError) {
           return const Scaffold(
             body: Center(

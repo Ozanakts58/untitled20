@@ -230,14 +230,30 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                           ),
                           ElevatedButton(onPressed: () async {
+                            String? encodeQueryParameters(
+                                Map<String, String> params) {
+                              return  params.entries
+                                  .map((MapEntry<String, String> e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                                  .join('&');
+                            }
+
                                final Uri url = Uri(
                                 scheme: 'sms',
                                 path: gelenKitapTelefon,
+                                 query: encodeQueryParameters(<String, String>{
+                                   'subject':'Ödünç Kitap Uygulaması',
+                                   'body':'$gelenKitapIsim kitabınızı ödünç almak istiyorum. Ne zaman müsait olursunuz?',
+                                 }),
                                );
-                               if (await canLaunchUrl(url)) {
+                               //if (await canLaunchUrl(url)) {
+                                // await launchUrl(url);
+                              // } else {
+                             //    print('Show dialog: cannot lauch this url');
+                             //  }
+                               try{
                                  await launchUrl(url);
-                               } else {
-                                 print('Show dialog: cannot lauch this url');
+                               } catch (e) {
+                                 print(e.toString());
                                }
                           },
                               style: ElevatedButton.styleFrom(

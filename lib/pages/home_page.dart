@@ -5,6 +5,8 @@ import 'package:untitled18/pages/description_page.dart';
 import 'package:untitled18/pages/home_page_axample_card.dart';
 import 'package:untitled18/pages/profile_page.dart';
 import 'package:untitled18/widgets/bottom_nav_bar2.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +18,40 @@ class _HomePageState extends State<HomePage> {
   ScrollController controller = ScrollController();
   bool closeTopContainer = false;
   double topContainer = 0;
+
+  TextEditingController t1 = TextEditingController();
+  TextEditingController t2 = TextEditingController();
+
+  var gelenKitapIsim = "";
+  var gelenKitapYazar = "";
+  var gelenYaziSoyad = "";
+  var gelenYaziResim = "";
+  var gelenKitapResim = "";
+  var gelenKitapAciklama = "";
+  var gelenKitapTelefon = "";
+  var gelenKullaniciMail = "";
+
+  YaziGetirArama() {
+    FirebaseFirestore.instance
+        .collection("books")
+        .doc(t2.text)
+        .get()
+        .then((gelenVeri) {
+      setState(() {
+        gelenKitapIsim = gelenVeri.data()!['book_name'];
+        gelenKitapYazar = gelenVeri.data()!["writer"];
+        gelenKitapResim = gelenVeri.data()!["book_image"];
+        gelenKitapAciklama = gelenVeri.data()!["book_description"];
+        gelenKitapTelefon = gelenVeri.data()!["user_telephone"];
+        gelenKullaniciMail = gelenVeri.data()!["user_mail"];
+      });
+    });
+  }
+
+
+
+
+
 
   List<Widget> itemsData = [];
 
@@ -64,18 +100,75 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                     TextButton(
-                      onPressed: () {
-                        //Navigator.pop(context);
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => const ProfilePage()));
+                      onPressed: () async {
+                        /*//Navigator.pop(context);
+                              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                  builder: (context) => const ProfilePage()));*/
+                        String? encodeQueryParameters(
+                            Map<String, String> params) {
+                          return  params.entries
+                              .map((MapEntry<String, String> e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                              .join('&');
+                        }
+                        final Uri emailUri = Uri(
+                          scheme: 'mailto',
+                          path: post["mail"],
+                          query: encodeQueryParameters(<String, String>{
+                            'subject':'Ödünç Kitap Uygulaması',
+                            'body':'${post["name"]} kitabınızı ödünç almak istiyorum. Ne zaman müsait olursunuz?',
+                          }),
+                        );
+                        //if(await canLaunchUrl(emailUri)) {
+                        // launchUrl(emailUri);
+                        //} else {
+                        // throw Exception('Could not launch $emailUri');
+                        //}
+                        try{
+                          await launchUrl(emailUri);
+                        } catch (e) {
+                          print(e.toString());
+                        }
+
                       },
                       child: const Text(
-                        "Daha fazla bilgi",
+                        "Mail İle Ödünç Al",
                         style: TextStyle(
                           color: Colors.blue,
-                          fontSize: 12,
+                          fontSize: 15,
                         ),
                       ),
+                    ),
+                    ElevatedButton(onPressed: () async {
+                      String? encodeQueryParameters(
+                          Map<String, String> params) {
+                        return  params.entries
+                            .map((MapEntry<String, String> e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+                            .join('&');
+                      }
+
+                      final Uri url = Uri(
+                        scheme: 'sms',
+                        path: post["sms"],
+                        query: encodeQueryParameters(<String, String>{
+                          'subject':'Ödünç Kitap Uygulaması',
+                          'body':'${post["name"]} kitabınızı ödünç almak istiyorum. Ne zaman müsait olursunuz?',
+                        }),
+                      );
+                      //if (await canLaunchUrl(url)) {
+                      // await launchUrl(url);
+                      // } else {
+                      //    print('Show dialog: cannot lauch this url');
+                      //  }
+                      try{
+                        await launchUrl(url);
+                      } catch (e) {
+                        print(e.toString());
+                      }
+                    },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
+                      child: const Text('Sms'),
+
                     ),
                   ],
                 ),

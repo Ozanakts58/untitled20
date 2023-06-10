@@ -28,6 +28,8 @@ class _SearchPageState extends State<SearchPage> {
   var gelenYaziResim = "";
   var gelenKitapResim = "";
   var gelenKitapAciklama = "";
+  var gelenKitapTelefon = "";
+  var gelenKullaniciMail = "";
 
   YaziGetirArama() {
     FirebaseFirestore.instance
@@ -40,6 +42,8 @@ class _SearchPageState extends State<SearchPage> {
         gelenKitapYazar = gelenVeri.data()!["writer"];
         gelenKitapResim = gelenVeri.data()!["book_image"];
         gelenKitapAciklama = gelenVeri.data()!["book_description"];
+        gelenKitapTelefon = gelenVeri.data()!["user_telephone"];
+        gelenKullaniciMail = gelenVeri.data()!["user_mail"];
       });
     });
   }
@@ -199,7 +203,7 @@ class _SearchPageState extends State<SearchPage> {
                               }
                               final Uri emailUri = Uri(
                                 scheme: 'mailto',
-                                path: 'ozanakts58@gmail.com',
+                                path: gelenKullaniciMail,
                                 query: encodeQueryParameters(<String, String>{
                                   'subject':'Ödünç Kitap Uygulaması',
                                   'body':'$gelenKitapIsim kitabınızı ödünç almak istiyorum. Ne zaman müsait olursunuz?',
@@ -228,7 +232,7 @@ class _SearchPageState extends State<SearchPage> {
                           ElevatedButton(onPressed: () async {
                                final Uri url = Uri(
                                 scheme: 'sms',
-                                path: '0537 457 96 29'
+                                path: gelenKitapTelefon,
                                );
                                if (await canLaunchUrl(url)) {
                                  await launchUrl(url);
@@ -237,7 +241,7 @@ class _SearchPageState extends State<SearchPage> {
                                }
                           },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red.shade50),
+                                backgroundColor: Colors.blue),
                             child: const Text('Sms'),
 
                           ),
